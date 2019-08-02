@@ -1,0 +1,338 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "tenantId": {
+            "maxLength": 36,
+            "type": "String",
+            "metadata": {
+                "description": "Azure Tenant ID [> tenant <]"
+            }
+        },
+        "applicationId": {
+            "maxLength": 36,
+            "type": "String",
+            "metadata": {
+                "description": "The Application ID of the Service Principal [> appId <]"
+            }
+        },
+        "applicationSecret": {
+            "maxLength": 128,
+            "type": "SecureString",
+            "metadata": {
+                "description": "The Application Secret of the Service Principal [> password <]"
+            }
+        },
+        "SSH Public Key": {
+            "type": "String",
+            "metadata": {
+                "description": "The SSH public key to access the VMs."
+            }
+        },
+        "username": {
+            "maxLength": 32,
+            "type": "String",
+            "metadata": {
+                "description": "The username for logging into the VM"
+            }
+        },
+        "cyclecloudVmSize": {
+            "defaultValue": "Standard_D3_v2",
+            "maxLength": 36,
+            "type": "String",
+            "metadata": {
+                "description": "VM Size for the CycleCloud server"
+            }
+        },
+        "cyclecloudVmStorage": {
+            "defaultValue": "Standard_LRS",
+            "allowedValues": [
+                "Standard_LRS",
+                "Premium_LRS"
+            ],
+            "maxLength": 32,
+            "type": "String",
+            "metadata": {
+                "description": "Type of storage for the CycleCloud VM: Premium_LRS or Standard_LRS"
+            }
+        },
+        "cyclecloudVersion": {
+            "defaultValue": "latest",
+            "allowedValues": [
+                "latest",
+                "7.7.4",
+                "7.7.3",
+                "7.7.2",
+                "7.7.1",
+                "7.6.1",
+                "7.6.0"
+            ],
+            "maxLength": 32,
+            "type": "String",
+            "metadata": {
+                "description": "CycleCloud Software Version to install"
+            }
+        },
+        "azureSovereignCloud": {
+            "defaultValue": "public",
+            "allowedValues": [
+                "public",
+                "china",
+                "germany",
+                "usgov"
+            ],
+            "maxLength": 36,
+            "type": "String",
+            "metadata": {
+                "description": "Azure National Cloud to use."
+            }
+        },
+        "existingVnetName": {
+            "defaultValue": "",
+            "maxLength": 36,
+            "type": "String",
+            "metadata": {
+                "description": "Name of an existing VNET inside the resource group to deploy Azure CycleCloud in"
+            }
+        },
+        "vnetSubnetName": {
+            "defaultValue": "default",
+            "maxLength": 36,
+            "type": "String",
+            "metadata": {
+                "description": "Name of an existing subnet inside the above VNET to deploy Azure CycleCloud in"
+            }
+        },
+        "storageAccountLocation": {
+            "defaultValue": "",
+            "maxLength": 36,
+            "type": "String",
+            "metadata": {
+                "description": "Name of storage account to use for Azure CycleCloud storage"
+            }
+        }
+    },
+    "variables": {
+        "computeApiVersion": "2017-03-30",
+        "authorizedKeyFile": "[concat('/home/', parameters('username'),'/.ssh/authorized_keys')]",
+        "cycleDownloadURL": "https://cyclecloudarm.azureedge.net/cyclecloudrelease",
+        "cycleName": "cyclecloud",
+        "cycleNic": "cycle-nic",
+        "cycleNsgName": "cycle-nsg",
+        "cycleIPName": "cycle-ip",
+        "installScriptURL": "[concat(variables('cycleDownloadURL'), '/', parameters('cyclecloudVersion'), '/cyclecloud_install.py')]",
+        "namingInfix": "[toLower(take(uniqueString(subscription().subscriptionId, resourceGroup().id), 6))]",
+        "networkApiVersion": "2017-06-01",
+        "resourceLocation": "[resourceGroup().location]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "name": "[variables('cycleNsgName')]",
+            "location": "[variables('resourceLocation')]",
+            "dependsOn": [],
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "AllowSecuredCyclePortalInBound",
+                        "properties": {
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "443",
+                            "sourceAddressPrefix": "Internet",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 2000,
+                            "direction": "Inbound",
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    },
+                    {
+                        "name": "AllowCyclePortalInBound",
+                        "properties": {
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "80",
+                            "sourceAddressPrefix": "Internet",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 1000,
+                            "direction": "Inbound",
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    },
+                    {
+                        "name": "default-allow-ssh",
+                        "properties": {
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 3000,
+                            "direction": "Inbound",
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "name": "[variables('cycleIPName')]",
+            "location": "[variables('resourceLocation')]",
+            "dependsOn": [],
+            "properties": {
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Static",
+                "idleTimeoutInMinutes": 4,
+                "dnsSettings": {
+                    "domainNameLabel": "[concat('cyclecloud', variables('namingInfix'))]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "[variables('computeApiVersion')]",
+            "name": "[variables('cycleName')]",
+            "location": "[variables('resourceLocation')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces', variables('cycleNic'))]"
+            ],
+            "identity": {
+                "type": "systemAssigned"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('cyclecloudVmSize')]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('cycleNic'))]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "adminUsername": "[parameters('username')]",
+                    "computerName": "[variables('cycleName')]",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": true,
+                        "ssh": {
+                            "publicKeys": [
+                                {
+                                    "keyData": "[parameters('SSH Public Key')]",
+                                    "path": "[variables('authorizedKeyFile')]"
+                                }
+                            ]
+                        }
+                    },
+                    "secrets": []
+                },
+                "storageProfile": {
+                    "dataDisks": [
+                        {
+                            "caching": "ReadOnly",
+                            "createOption": "Empty",
+                            "diskSizeGB": 128,
+                            "lun": 0,
+                            "managedDisk": {
+                                "storageAccountType": "[parameters('cyclecloudVmStorage')]"
+                            }
+                        }
+                    ],
+                    "imageReference": {
+                        "offer": "CentOS",
+                        "publisher": "OpenLogic",
+                        "sku": "7.3",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('cyclecloudVmStorage')]"
+                        },
+                        "osType": "Linux"
+                    }
+                }
+            },
+            "resources": [
+                {
+                    "type": "extensions",
+                    "apiVersion": "[variables('computeApiVersion')]",
+                    "name": "InstallCycle",
+                    "location": "[resourceGroup().location]",
+                    "dependsOn": [
+                        "[variables('cycleName')]"
+                    ],
+                    "properties": {
+                        "autoUpgradeMinorVersion": true,
+                        "protectedSettings": {
+                            "commandToExecute": "[concat('python cyclecloud_install.py ', ' --applicationSecret ', '\"', parameters('applicationSecret'), '\"', ' --applicationId ', '\"', parameters('applicationId'), '\"', ' --tenantId ', '\"', parameters('tenantId'), '\"', ' --azureSovereignCloud ', '\"', parameters('azureSovereignCloud'), '\"', ' --downloadURL ', '\"', variables('cycleDownloadURL'), '\"', ' --cyclecloudVersion ', '\"', parameters('cyclecloudVersion'),  '\"', ' --username ', '\"', parameters('username'), '\"', ' --hostname ', '\"', reference(variables('cycleIPName')).dnsSettings.fqdn, '\"', ' --storageAccount ', '\"', parameters('storageAccountLocation'), '\"')]"
+                        },
+                        "publisher": "Microsoft.Azure.Extensions",
+                        "settings": {
+                            "fileUris": [
+                                "[variables('installScriptURL')]"
+                            ]
+                        },
+                        "type": "CustomScript",
+                        "typeHandlerVersion": "2.0"
+                    }
+                }
+            ]
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "name": "[variables('cycleNic')]",
+            "location": "[variables('resourceLocation')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('cycleNsgName'))]",
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('cycleIPName'))]"
+            ],
+            "properties": {
+                "dnsSettings": {},
+                "enableAcceleratedNetworking": false,
+                "enableIPForwarding": false,
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "primary": true,
+                            "privateIPAddressVersion": "IPv4",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('cycleIPName'))]"
+                            },
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('existingVnetName'), parameters('vnetSubnetName'))]"
+                            }
+                        }
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('cycleNsgName'))]"
+                },
+                "primary": true
+            }
+        }
+    ],
+    "outputs": {
+        "fqdn": {
+            "type": "String",
+            "value": "[reference(variables('cycleIPName')).dnsSettings.fqdn]"
+        },
+        "ipaddress": {
+            "type": "String",
+            "value": "[reference(variables('cycleIPName')).ipAddress]"
+        }
+    }
+}
