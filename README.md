@@ -2,7 +2,7 @@
 
 Deploying Azure CycleCloud into a subscription using an Azure Resource Manager template
 
-Highly based on https://docs.microsoft.com/en-us/azure/cyclecloud/quickstart-install-cyclecloud and  https://github.com/CycleCloudCommunity/cyclecloud_arm/
+Based on https://docs.microsoft.com/en-us/azure/cyclecloud/quickstart-install-cyclecloud and  https://github.com/CycleCloudCommunity/cyclecloud_arm/
 
 
 Currently the main differences are:
