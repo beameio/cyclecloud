@@ -275,13 +275,31 @@
                     "properties": {
                         "autoUpgradeMinorVersion": true,
                         "protectedSettings": {
-                            "commandToExecute": "[concat('python cyclecloud_install.py ', ' --applicationSecret ', '\"', parameters('applicationSecret'), '\"', ' --applicationId ', '\"', parameters('applicationId'), '\"', ' --tenantId ', '\"', parameters('tenantId'), '\"', ' --azureSovereignCloud ', '\"', parameters('azureSovereignCloud'), '\"', ' --downloadURL ', '\"', variables('cycleDownloadURL'), '\"', ' --cyclecloudVersion ', '\"', parameters('cyclecloudVersion'),  '\"', ' --username ', '\"', parameters('username'), '\"', ' --hostname ', '\"', reference(variables('cycleIPName')).dnsSettings.fqdn, '\"', ' --storageAccount ', '\"', parameters('storageAccountLocation'), '\"', ' && cyclecloud project fetch https://github.com/beameio/cyclecloud-htcondor /opt/cycle_server/work/staging/projects/custom-htcondor && cp /opt/cycle_server/work/staging/projects/htcondor/blobs /opt/cycle_server/work/staging/projects/custom-htcondor/ -rv && (cd /opt/cycle_server/work/staging/projects/custom-htcondor && cyclecloud project build && cyclecloud import_template -f templates/htcondor.txt)')]"
+                            "commandToExecute": "[concat('python cyclecloud_install.py ', ' --applicationSecret ', '\"', parameters('applicationSecret'), '\"', ' --applicationId ', '\"', parameters('applicationId'), '\"', ' --tenantId ', '\"', parameters('tenantId'), '\"', ' --azureSovereignCloud ', '\"', parameters('azureSovereignCloud'), '\"', ' --downloadURL ', '\"', variables('cycleDownloadURL'), '\"', ' --cyclecloudVersion ', '\"', parameters('cyclecloudVersion'),  '\"', ' --username ', '\"', parameters('username'), '\"', ' --hostname ', '\"', reference(variables('cycleIPName')).dnsSettings.fqdn, '\"', ' --storageAccount ', '\"', parameters('storageAccountLocation'), '\"')]"
                         },
                         "publisher": "Microsoft.Azure.Extensions",
                         "settings": {
                             "fileUris": [
                                 "[variables('installScriptURL')]"
                             ]
+                        },
+                        "type": "CustomScript",
+                        "typeHandlerVersion": "2.0"
+                    }
+                },
+                {
+                    "type": "extensions",
+                    "apiVersion": "[variables('computeApiVersion')]",
+                    "name": "InstallCycle2",
+                    "location": "[resourceGroup().location]",
+                    "dependsOn": [
+                        "InstallCycle"
+                    ],
+                    "properties": {
+                        "autoUpgradeMinorVersion": true,
+                        "publisher": "Microsoft.Azure.Extensions",
+                        "settings": {
+                            "commandToExecute": "cyclecloud project fetch https://github.com/beameio/cyclecloud-htcondor /opt/cycle_server/work/staging/projects/custom-htcondor && cp /opt/cycle_server/work/staging/projects/htcondor/blobs /opt/cycle_server/work/staging/projects/custom-htcondor/ -rv && (cd /opt/cycle_server/work/staging/projects/custom-htcondor && cyclecloud project build && cyclecloud import_template -f templates/htcondor.txt)"
                         },
                         "type": "CustomScript",
                         "typeHandlerVersion": "2.0"
