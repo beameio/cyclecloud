@@ -286,6 +286,24 @@
                         "type": "CustomScript",
                         "typeHandlerVersion": "2.0"
                     }
+                },
+                {
+                    "type": "extensions",
+                    "apiVersion": "[variables('computeApiVersion')]",
+                    "name": "InstallHTCondorTemplate",
+                    "location": "[resourceGroup().location]",
+                    "dependsOn": [
+                        "[resourceId('extensions','InstallCycle')]"
+                    ],
+                    "properties": {
+                        "autoUpgradeMinorVersion": true,
+                        "publisher": "Microsoft.Azure.Extensions",
+                        "settings": {
+                            "commandToExecute": "[concat('cyclecloud project fetch https://github.com/beameio/cyclecloud-htcondor /opt/cycle_server/work/staging/projects/custom-htcondor && cp /opt/cycle_server/work/staging/projects/htcondor/blobs /opt/cycle_server/work/staging/projects/custom-htcondor/ -rv && ', '(cd /opt/cycle_server/work/staging/projects/custom-htcondor && cyclecloud project build && cyclecloud import_template -f templates/htcondor.txt)')]"
+                        },
+                        "type": "CustomScript",
+                        "typeHandlerVersion": "2.0"
+                    }
                 }
             ]
         },
