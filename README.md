@@ -2,7 +2,7 @@
 
 Deploys cyclecloud azure infrastructure.
 
-Highly based on https://docs.microsoft.com/en-us/azure/cyclecloud/quickstart-install-cyclecloud and  https://raw.githubusercontent.com/CycleCloudCommunity/cyclecloud_arm/master/azuredeploy.json
+Highly based on https://docs.microsoft.com/en-us/azure/cyclecloud/quickstart-install-cyclecloud and  https://github.com/CycleCloudCommunity/cyclecloud_arm/
 
 Currently the main differences are:
 - allows to use an already existing vnet
