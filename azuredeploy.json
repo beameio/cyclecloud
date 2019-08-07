@@ -293,8 +293,7 @@
                     "name": "InstallCycle2",
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
-                        "[variables('cycleName')]",
-                        "InstallCycle"
+                        "[variables('cycleName')]"
                     ],
                     "properties": {
                         "autoUpgradeMinorVersion": true,
