@@ -120,6 +120,7 @@
         "cycleNic": "cycle-nic",
         "cycleNsgName": "cycle-nsg",
         "cycleIPName": "cycle-ip",
+        "cycleInstall": "InstallCycle",
         "installScriptURL": "[concat(variables('cycleDownloadURL'), '/', parameters('cyclecloudVersion'), '/cyclecloud_install.py')]",
         "namingInfix": "[toLower(take(uniqueString(subscription().subscriptionId, resourceGroup().id), 6))]",
         "networkApiVersion": "2017-06-01",
@@ -267,7 +268,7 @@
                 {
                     "type": "extensions",
                     "apiVersion": "[variables('computeApiVersion')]",
-                    "name": "InstallCycle",
+                    "name": "[variables('cycleInstall')]",
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
                         "[variables('cycleName')]"
@@ -290,10 +291,10 @@
                 {
                     "type": "extensions",
                     "apiVersion": "[variables('computeApiVersion')]",
-                    "name": "InstallCycle2",
+                    "name": "InstallHTCondor",
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
-                        "[variables('cycleName')]"
+                        "[variables('cycleInstall')]"
                     ],
                     "properties": {
                         "autoUpgradeMinorVersion": true,
