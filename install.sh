@@ -11,7 +11,7 @@ cycleFqdn=$8
 storageAccountLocation=$9
 
 echo "Installing CycleCloud"
-python cyclecloud_install.py --applicationSecret $applicationSecret --applicationId $applicationId --tenantId $tenantId --azureSovereignCloud $azureSovereignCloud --downloadURL $cycleDownloadURL --cyclecloudVersion $cyclecloudVersion --username $username --hostname $cycleFqdn --storageAccount $storageAccountLocation
+python cyclecloud_install.py --applicationSecret "$applicationSecret" --applicationId "$applicationId" --tenantId "$tenantId" --azureSovereignCloud "$azureSovereignCloud" --downloadURL "$cycleDownloadURL" --cyclecloudVersion "$cyclecloudVersion" --username "$username" --hostname "$cycleFqdn" --storageAccount "$storageAccountLocation"
 
 echo "Installing htcondor template"
 cyclecloud project fetch https://github.com/beameio/cyclecloud-htcondor /opt/cycle_server/work/staging/projects/custom-htcondor 
