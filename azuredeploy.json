@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "tenantId": {
-            "default": "35639714-c56a-4545-9e9e-ecb95c32f238",
+            "defaultValue": "35639714-c56a-4545-9e9e-ecb95c32f238",
             "maxLength": 36,
             "type": "String",
             "metadata": {
@@ -11,7 +11,7 @@
             }
         },
         "applicationId": {
-            "default": "a2f5bd5c-57c0-4931-a1c6-3826f463b111",
+            "defaultValue": "a2f5bd5c-57c0-4931-a1c6-3826f463b111",
             "maxLength": 36,
             "type": "String",
             "metadata": {
@@ -26,14 +26,14 @@
             }
         },
         "SSH Public Key": {
-            "default": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDX3Wz8O6kOCH+V+72YlsXsfGpZKYOeu2D7PP1o7TVooK1kVRVPNl60Ubc6QBr/1y54nnTV8g44ZWGlK6lUGaEFDuwEG4Zkx0m0ygYb939bwcKWMcDaT/LbIWeb1WAVkU/O04Y/Dlxan3M5xUU3VGbaUO3iSrO8kcDkcZhI2mt8xwFNHF5nHnJwC9SCY868Zj4KqfYCVQrDGOJAI+CkZ/8rMmvvyJDOD+KK6HS1JnfML1IoTNolzhSCSKtM/cCTZG4/gSdUiKASrcRH3ui/TRQQZTXOUJtLYpdhxVZH6jaTD4+W/4igHJ0NabuBuepf2MCEkxzxeUUn1CfgWysd0REbd2n6brqHaLEjvT8vPQQhFNNMw187Q7FMHPAk+vhmuPf7Ck9Dkl5+xofraNElviOxGCEp+FRa+MimyWhYqlcrLfxjxYDMTbw3tNPKXZavHKTLekrkoAVRqjxmShKiV/0S6yn+g0g3/RPLTSswP/p4NarM3A+OuX2C37sdNRlRkHsyakhmadqjDAF4/BotRVEjOw00OkdbpmxeqMu/cSfHhsHDxXGSHPKmCryaYOJsXPrq7De31Cld5WoWMj5UZzltONaeNf9/j8LBlXx2URtSgKX1yfCSPFd6OjUG8rrfkr/zsTkgm/h4bfHvp9rkaWO/GQ6ILrn4RayotM6CyoP30Q== rg@beame.io",
+            "defaultValue": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDX3Wz8O6kOCH+V+72YlsXsfGpZKYOeu2D7PP1o7TVooK1kVRVPNl60Ubc6QBr/1y54nnTV8g44ZWGlK6lUGaEFDuwEG4Zkx0m0ygYb939bwcKWMcDaT/LbIWeb1WAVkU/O04Y/Dlxan3M5xUU3VGbaUO3iSrO8kcDkcZhI2mt8xwFNHF5nHnJwC9SCY868Zj4KqfYCVQrDGOJAI+CkZ/8rMmvvyJDOD+KK6HS1JnfML1IoTNolzhSCSKtM/cCTZG4/gSdUiKASrcRH3ui/TRQQZTXOUJtLYpdhxVZH6jaTD4+W/4igHJ0NabuBuepf2MCEkxzxeUUn1CfgWysd0REbd2n6brqHaLEjvT8vPQQhFNNMw187Q7FMHPAk+vhmuPf7Ck9Dkl5+xofraNElviOxGCEp+FRa+MimyWhYqlcrLfxjxYDMTbw3tNPKXZavHKTLekrkoAVRqjxmShKiV/0S6yn+g0g3/RPLTSswP/p4NarM3A+OuX2C37sdNRlRkHsyakhmadqjDAF4/BotRVEjOw00OkdbpmxeqMu/cSfHhsHDxXGSHPKmCryaYOJsXPrq7De31Cld5WoWMj5UZzltONaeNf9/j8LBlXx2URtSgKX1yfCSPFd6OjUG8rrfkr/zsTkgm/h4bfHvp9rkaWO/GQ6ILrn4RayotM6CyoP30Q== rg@beame.io",
             "type": "String",
             "metadata": {
                 "description": "The SSH public key to access the VMs."
             }
         },
         "username": {
-            "default": "rg",
+            "defaultValue": "rg",
             "maxLength": 32,
             "type": "String",
             "metadata": {
