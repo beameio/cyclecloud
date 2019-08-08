@@ -15,5 +15,6 @@ python cyclecloud_install.py --applicationSecret "$applicationSecret" --applicat
 
 echo "Installing htcondor template"
 cyclecloud project fetch https://github.com/beameio/cyclecloud-htcondor /opt/cycle_server/work/staging/projects/custom-htcondor 
-cp /opt/cycle_server/work/staging/projects/htcondor/blobs /opt/cycle_server/work/staging/projects/custom-htcondor/ -rv 
-(cd /opt/cycle_server/work/staging/projects/custom-htcondor && cyclecloud project build && cyclecloud import_template -f templates/htcondor.txt)
+cyclecloud import_template -f /opt/cycle_server/work/staging/projects/custom-htcondor/templates/htcondor.txt
+# cp /opt/cycle_server/work/staging/projects/htcondor/blobs /opt/cycle_server/work/staging/projects/custom-htcondor/ -rv
+# (cd /opt/cycle_server/work/staging/projects/custom-htcondor && cyclecloud project build && cyclecloud import_template -f templates/htcondor.txt)

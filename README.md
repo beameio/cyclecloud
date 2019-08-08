@@ -7,7 +7,7 @@ Based on https://docs.microsoft.com/en-us/azure/cyclecloud/quickstart-install-cy
 
 Currently the main differences are:
 - allows to use an already existing vnet
-- installs beame cyclecloud-htcondor project in the cyclecloud machine
+- installs https://github.com/beameio/cyclecloud-htcondor project in the cyclecloud machine
 
 
 
