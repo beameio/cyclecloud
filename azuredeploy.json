@@ -3,6 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "tenantId": {
+            "default": "35639714-c56a-4545-9e9e-ecb95c32f238",
             "maxLength": 36,
             "type": "String",
             "metadata": {
@@ -10,6 +11,7 @@
             }
         },
         "applicationId": {
+            "default": "a2f5bd5c-57c0-4931-a1c6-3826f463b111",
             "maxLength": 36,
             "type": "String",
             "metadata": {
@@ -24,12 +26,14 @@
             }
         },
         "SSH Public Key": {
+            "default": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDX3Wz8O6kOCH+V+72YlsXsfGpZKYOeu2D7PP1o7TVooK1kVRVPNl60Ubc6QBr/1y54nnTV8g44ZWGlK6lUGaEFDuwEG4Zkx0m0ygYb939bwcKWMcDaT/LbIWeb1WAVkU/O04Y/Dlxan3M5xUU3VGbaUO3iSrO8kcDkcZhI2mt8xwFNHF5nHnJwC9SCY868Zj4KqfYCVQrDGOJAI+CkZ/8rMmvvyJDOD+KK6HS1JnfML1IoTNolzhSCSKtM/cCTZG4/gSdUiKASrcRH3ui/TRQQZTXOUJtLYpdhxVZH6jaTD4+W/4igHJ0NabuBuepf2MCEkxzxeUUn1CfgWysd0REbd2n6brqHaLEjvT8vPQQhFNNMw187Q7FMHPAk+vhmuPf7Ck9Dkl5+xofraNElviOxGCEp+FRa+MimyWhYqlcrLfxjxYDMTbw3tNPKXZavHKTLekrkoAVRqjxmShKiV/0S6yn+g0g3/RPLTSswP/p4NarM3A+OuX2C37sdNRlRkHsyakhmadqjDAF4/BotRVEjOw00OkdbpmxeqMu/cSfHhsHDxXGSHPKmCryaYOJsXPrq7De31Cld5WoWMj5UZzltONaeNf9/j8LBlXx2URtSgKX1yfCSPFd6OjUG8rrfkr/zsTkgm/h4bfHvp9rkaWO/GQ6ILrn4RayotM6CyoP30Q== rg@beame.io",
             "type": "String",
             "metadata": {
                 "description": "The SSH public key to access the VMs."
             }
         },
         "username": {
+            "default": "rg",
             "maxLength": 32,
             "type": "String",
             "metadata": {
@@ -88,7 +92,7 @@
             }
         },
         "existingVnetName": {
-            "defaultValue": "",
+            "defaultValue": "test",
             "maxLength": 36,
             "type": "String",
             "metadata": {
@@ -116,11 +120,13 @@
         "computeApiVersion": "2017-03-30",
         "authorizedKeyFile": "[concat('/home/', parameters('username'),'/.ssh/authorized_keys')]",
         "cycleDownloadURL": "https://cyclecloudarm.azureedge.net/cyclecloudrelease",
+        "beameDownloadURL": "https://raw.githubusercontent.com/beameio/cyclecloud/master",
         "cycleName": "cyclecloud",
         "cycleNic": "cycle-nic",
         "cycleNsgName": "cycle-nsg",
         "cycleIPName": "cycle-ip",
-        "installScriptURL": "[concat(variables('cycleDownloadURL'), '/', parameters('cyclecloudVersion'), '/cyclecloud_install.py')]",
+        "installScriptURL": "[concat(variables('beameDownloadURL'), '/install.sh')]",
+        "cycleInstallScriptURL": "[concat(variables('cycleDownloadURL'), '/', parameters('cyclecloudVersion'), '/cyclecloud_install.py')]",
         "namingInfix": "[toLower(take(uniqueString(subscription().subscriptionId, resourceGroup().id), 6))]",
         "networkApiVersion": "2017-06-01",
         "resourceLocation": "[resourceGroup().location]"
@@ -267,7 +273,7 @@
                 {
                     "type": "extensions",
                     "apiVersion": "[variables('computeApiVersion')]",
-                    "name": "install-cycle",
+                    "name": "install",
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
                         "[variables('cycleName')]"
@@ -275,32 +281,14 @@
                     "properties": {
                         "autoUpgradeMinorVersion": true,
                         "protectedSettings": {
-                            "commandToExecute": "[concat('python cyclecloud_install.py ', ' --applicationSecret ', '\"', parameters('applicationSecret'), '\"', ' --applicationId ', '\"', parameters('applicationId'), '\"', ' --tenantId ', '\"', parameters('tenantId'), '\"', ' --azureSovereignCloud ', '\"', parameters('azureSovereignCloud'), '\"', ' --downloadURL ', '\"', variables('cycleDownloadURL'), '\"', ' --cyclecloudVersion ', '\"', parameters('cyclecloudVersion'),  '\"', ' --username ', '\"', parameters('username'), '\"', ' --hostname ', '\"', reference(variables('cycleIPName')).dnsSettings.fqdn, '\"', ' --storageAccount ', '\"', parameters('storageAccountLocation'), '\"')]"
+                            "commandToExecute": "[concat('./install.sh', ' \"', parameters('applicationSecret'), '\"', ' \"', parameters('applicationId'), '\"', ' \"', parameters('tenantId'), '\"', ' \"', parameters('azureSovereignCloud'), '\"', ' \"', variables('cycleDownloadURL'), '\"', ' \"', parameters('cyclecloudVersion'),  '\"', ' \"', parameters('username'), '\"', ' \"', reference(variables('cycleIPName')).dnsSettings.fqdn, '\"', ' \"', parameters('storageAccountLocation'), '\"')]"
                         },
                         "publisher": "Microsoft.Azure.Extensions",
                         "settings": {
                             "fileUris": [
-                                "[variables('installScriptURL')]"
+                                "[variables('installScriptURL')]",
+                                "[variables('cycleInstallScriptURL')]"
                             ]
-                        },
-                        "type": "CustomScript",
-                        "typeHandlerVersion": "2.0"
-                    }
-                },
-                {
-                    "type": "extensions",
-                    "apiVersion": "[variables('computeApiVersion')]",
-                    "name": "install-htcondor",
-                    "location": "[resourceGroup().location]",
-                    "dependsOn": [
-                        "[variables('cycleName')]",
-                        "install-cycle"
-                    ],
-                    "properties": {
-                        "autoUpgradeMinorVersion": true,
-                        "publisher": "Microsoft.Azure.Extensions",
-                        "settings": {
-                            "commandToExecute": "cyclecloud project fetch https://github.com/beameio/cyclecloud-htcondor /opt/cycle_server/work/staging/projects/custom-htcondor && cp /opt/cycle_server/work/staging/projects/htcondor/blobs /opt/cycle_server/work/staging/projects/custom-htcondor/ -rv && (cd /opt/cycle_server/work/staging/projects/custom-htcondor && cyclecloud project build && cyclecloud import_template -f templates/htcondor.txt)"
                         },
                         "type": "CustomScript",
                         "typeHandlerVersion": "2.0"
