@@ -267,7 +267,7 @@
                 {
                     "type": "extensions",
                     "apiVersion": "[variables('computeApiVersion')]",
-                    "name": "[concat(variables('cycleName'),'/install-cycle')]",
+                    "name": "install-cycle",
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
                         "[variables('cycleName')]"
@@ -290,11 +290,11 @@
                 {
                     "type": "extensions",
                     "apiVersion": "[variables('computeApiVersion')]",
-                    "name": "[concat(variables('cycleName'),'/install-htcondor')]",
+                    "name": "install-htcondor",
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
                         "[variables('cycleName')]",
-                        "[concat(variables('cycleName'),'/install-cycle')]"
+                        "install-cycle"
                     ],
                     "properties": {
                         "autoUpgradeMinorVersion": true,
