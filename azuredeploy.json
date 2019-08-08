@@ -120,7 +120,6 @@
         "cycleNic": "cycle-nic",
         "cycleNsgName": "cycle-nsg",
         "cycleIPName": "cycle-ip",
-        "cycleInstall": "InstallCycle",
         "installScriptURL": "[concat(variables('cycleDownloadURL'), '/', parameters('cyclecloudVersion'), '/cyclecloud_install.py')]",
         "namingInfix": "[toLower(take(uniqueString(subscription().subscriptionId, resourceGroup().id), 6))]",
         "networkApiVersion": "2017-06-01",
@@ -268,10 +267,10 @@
                 {
                     "type": "extensions",
                     "apiVersion": "[variables('computeApiVersion')]",
-                    "name": "[variables('cycleInstall')]",
+                    "name": "[concat(variables('cycleName'),'/install-cycle')]",
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
-                        "[concat('Microsoft.Compute/virtualMachines/', variables('cycleName'))]"
+                        "[variables('cycleName')]"
                     ],
                     "properties": {
                         "autoUpgradeMinorVersion": true,
@@ -291,11 +290,11 @@
                 {
                     "type": "extensions",
                     "apiVersion": "[variables('computeApiVersion')]",
-                    "name": "InstallHTCondor",
+                    "name": "[concat(variables('cycleName'),'/install-htcondor')]",
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
-                        "[concat('Microsoft.Compute/virtualMachines/', variables('cycleName'))]",
-                        "[concat('Microsoft.Compute/virtualMachines/', variables('cycleName'),'/', variables('cycleInstall'))]"
+                        "[variables('cycleName')]",
+                        "[concat(variables('cycleName'),'/install-cycle')]"
                     ],
                     "properties": {
                         "autoUpgradeMinorVersion": true,
