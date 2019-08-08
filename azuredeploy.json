@@ -271,7 +271,7 @@
                     "name": "[variables('cycleInstall')]",
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
-                        "[variables('cycleName')]"
+                        "[concat('Microsoft.Compute/virtualMachines/', variables('cycleName'))]"
                     ],
                     "properties": {
                         "autoUpgradeMinorVersion": true,
@@ -294,7 +294,8 @@
                     "name": "InstallHTCondor",
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
-                        "[variables('cycleInstall')]"
+                        "[concat('Microsoft.Compute/virtualMachines/', variables('cycleName'))]",
+                        "[concat('Microsoft.Compute/virtualMachines/', variables('cycleName'),'/', variables('cycleInstall'))]"
                     ],
                     "properties": {
                         "autoUpgradeMinorVersion": true,
