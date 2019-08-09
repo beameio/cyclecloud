@@ -43,7 +43,7 @@
         "password": {
             "defaultValue": "Te123456",
             "maxLength": 32,
-            "type": "String",
+            "type": "SecureString",
             "metadata": {
                 "description": "The password for logging into the cyclecloud"
             }
