@@ -1,0 +1,19 @@
+#!/usr/bin/env ngs
+
+F main(resource_group_name:Str="htcondor-"+Time().Str("%Y%m%d%H%M"), virtual_nerwork_name:Str="htcondor-vnet", virtual_nerwork_subnet_name:Str="default", virtual_network_subnet_address_prefix:Str="10.0.0.0/24", region:Str="West Europe") {
+    accounts = ``az account list``
+    # login if not done already
+    if not accounts ``az login``
+
+    # create resource group and vnet
+    echo("Creating resouce group ${resource_group_name}")
+    resource_group = ``az group create --name ${resource_group_name} --location ${region}``
+    echo("Creating virtual network ${virtual_nerwork_name} in the resource group ${resource_group_name}")
+    vnet = ``az network vnet create  --name ${virtual_nerwork_name} --resource-group ${resource_group_name}`` 
+    subnet = ``az network vnet subnet create --resource-group ${resource_group_name} --vnet-name ${virtual_nerwork_name} --name ${virtual_nerwork_subnet_name} --address-prefixes ${virtual_network_subnet_address_prefix}``
+
+    echo("Starting template deployment in the resource group ${resource_group_name}")
+    deploy = ``az group deployment create --resource-group ${resource_group_name} --template-file azuredeploy.json --parameters @azuredeploy.parameters.json --parameters existingVnetName=${virtual_nerwork_name} vnetSubnetName=${virtual_nerwork_subnet_name}``
+
+    echo("All done!!");
+}
