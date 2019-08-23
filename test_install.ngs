@@ -3,7 +3,7 @@
 F main(resource_group_name:Str="htcondor-"+Time().Str("%Y%m%d%H%M"), virtual_nerwork_name:Str="htcondor-vnet", virtual_nerwork_subnet_name:Str="default", virtual_network_subnet_address_prefix:Str="10.0.0.0/24", region:Str="West Europe") {
     accounts = ``az account list``
     # login if not done already
-    if not accounts ``az login``
+    if not(accounts) ``az login``
 
     # create resource group and vnet
     echo("Creating resouce group ${resource_group_name}")
