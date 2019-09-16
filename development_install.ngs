@@ -6,7 +6,7 @@ F main(resource_group_name:Str=Time().Str("htcondor-%Y%m%d%H%M"),
        virtual_network_subnet_address_prefix:Str="10.0.0.0/24", 
        region:Str="West Europe") {
 
-    # TODO: assert(Program('az'))
+    assert(Program('az'))
 
     # login if not done already
     accounts = ``az account list``
