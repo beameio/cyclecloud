@@ -6,23 +6,28 @@ F main(resource_group_name:Str=Time().Str("htcondor-%Y%m%d%H%M"),
        virtual_network_subnet_address_prefix:Str="10.0.0.0/24", 
        region:Str="West Europe") {
 
+    echo("Deploying with:")
+    echo("   region=${region}");
+    echo("   resource_group_name=${resource_group_name}");
+    echo("   virtual_nerwork_name=${virtual_nerwork_name}");
+    echo("   virtual_nerwork_subnet_name=${virtual_nerwork_subnet_name}");
+    echo("   virtual_network_subnet_address_prefix=${virtual_network_subnet_address_prefix}");
+
     assert(Program('az'))
-
-    # login if not done already
     accounts = ``az account list``
-    if not(accounts) ``az login``
+    if not(accounts) ``az login``     # login if not done already
 
-    # create resource group and vnet
-    echo("Deploying in the '${resource_group_name}' resource group")
     status("Creating resouce group")
     resource_group = ``az group create --name ${resource_group_name} --location ${region}``
+
     status("Creating virtual network")
     vnet = ``az network vnet create  --name ${virtual_nerwork_name} --resource-group ${resource_group_name}`` 
+
     status("Creating subnet")
     subnet = ``az network vnet subnet create --resource-group ${resource_group_name} --vnet-name ${virtual_nerwork_name} --name ${virtual_nerwork_subnet_name} --address-prefixes ${virtual_network_subnet_address_prefix}``
 
     status("Starting template deployment")
     deploy = ``az group deployment create --resource-group ${resource_group_name} --template-file azuredeploy.json --parameters @azuredeploy.parameters.json --parameters existingVnetName=${virtual_nerwork_name} vnetSubnetName=${virtual_nerwork_subnet_name}``
 
-    status("All done!!");
+    echo("All done!!");
 }
