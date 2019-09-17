@@ -34,8 +34,9 @@ echo "{
     \"configuration_htcondor_pool_password\": \"$poolPassword\",
     \"Password\": \"$password\",
     \"Region\": \"$region\",
-    \"SubnetId\": \"$subnetId\"
+    \"SubnetId\": \"$subnetId\",
+    \"Credentials\": \"azure\"
 }" >> params.json
+
 /usr/local/bin/cyclecloud create_cluster $htcondorTemplateName $clusterName -p params.json
 /usr/local/bin/cyclecloud start_cluster $clusterName
-#/usr/local/bin/cyclecloud add_node $clusterName
