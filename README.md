@@ -65,7 +65,7 @@ Others have to be defined in a `azuredeploy.parameters.json` file with the conte
 			"value": ""
 		},
 		"flockFrom": {
-			"value": "{\"1.1.1.1\",\"2.2.2.2\"}"
+			"value": "1.1.1.1, 2.2.2.2"
 		},
 		"poolPassword": {
 			"value": ""

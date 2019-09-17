@@ -15,6 +15,7 @@ clusterName=${12}
 flockFrom=${13}
 poolPassword=${14}
 region=${15}
+subnetId=${16}
 
 echo "Installing CycleCloud"
 python cyclecloud_install.py --cyclecloudVersion "$cyclecloudVersion" --downloadURL "$cycleDownloadURL" --azureSovereignCloud "$azureSovereignCloud" --tenantId "$tenantId" --applicationId "$applicationId" --applicationSecret "$applicationSecret" --username "$username" --hostname "$cycleFqdn" --acceptTerms --password "${password}" --storageAccount "$storageAccountLocation"
@@ -32,8 +33,9 @@ echo "{
     \"configuration_htcondor_flock_from\": \"$flockFrom\",
     \"configuration_htcondor_pool_password\": \"$poolPassword\",
     \"Password\": \"$password\",
-    \"Region\": \"$Region\"
+    \"Region\": \"$region\",
+    \"SubnetId\": \"$subnetId\"
 }" >> params.json
 /usr/local/bin/cyclecloud create_cluster $htcondorTemplateName $clusterName -p params.json
 /usr/local/bin/cyclecloud start_cluster $clusterName
-/usr/local/bin/cyclecloud add_node $clusterName
+#/usr/local/bin/cyclecloud add_node $clusterName
