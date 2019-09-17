@@ -31,5 +31,6 @@ F main(resource_group_name:Str=Time().Str("htcondor-%Y%m%d%H%M"),
 
     connectTo = ``az network public-ip show -g ${resource_group_name} -n cycle-ip --query dnsSettings.fqdn``
 
-    echo("All done!!  Connect to ${connectTo}");
+    echo("All done!!")
+    echo("-> Connect to ${connectTo}");
 }
