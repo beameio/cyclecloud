@@ -1,6 +1,7 @@
 #!/usr/bin/env ngs
 
-F main(resource_group_name:Str=Time().Str("htcondor-%Y%m%d%H%M"), 
+F main(resource_group_name:Str=Time().Str("htcondor-%Y%m%d%H%M"),
+       cluster_name:Str=Time().Str("htcondor-%Y%m%d%H%M"),
        virtual_nerwork_name:Str="htcondor-vnet", 
        virtual_nerwork_subnet_name:Str="default", 
        virtual_network_subnet_address_prefix:Str="10.0.0.0/24", 
@@ -26,8 +27,8 @@ F main(resource_group_name:Str=Time().Str("htcondor-%Y%m%d%H%M"),
     status("Creating subnet")
     subnet = ``az network vnet subnet create --resource-group ${resource_group_name} --vnet-name ${virtual_nerwork_name} --name ${virtual_nerwork_subnet_name} --address-prefixes ${virtual_network_subnet_address_prefix}``
 
-    status("Starting template deployment")
-    deploy = ``az group deployment create --resource-group ${resource_group_name} --template-file azuredeploy.json --parameters @azuredeploy.parameters.json --parameters existingVnetName=${virtual_nerwork_name} vnetSubnetName=${virtual_nerwork_subnet_name}``
+    status("Deploying template (azuredeploy.json)")
+    deploy = ``az group deployment create --resource-group ${resource_group_name} --template-file azuredeploy.json --parameters @azuredeploy.parameters.json --parameters existingVnetName=${virtual_nerwork_name} vnetSubnetName=${virtual_nerwork_subnet_name} clusterName=${cluster_name}``
 
     connectTo = ``az network public-ip show -g ${resource_group_name} -n cycle-ip --query dnsSettings.fqdn``
 

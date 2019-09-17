@@ -116,6 +116,27 @@
             "metadata": {
                 "description": "Name of storage account to use for Azure CycleCloud storage"
             }
+        },
+        "clusterName": {
+            "maxLength": 36,
+            "type": "String",
+            "metadata": {
+                "description": "Name of the new htcondor cluster to create"
+            }
+        },
+        "flockFrom": {
+            "maxLength": 36,
+            "type": "String",
+            "metadata": {
+                "description": "Allowed flock from htcondor ips, in the format {\"10.0.0.1\",\"10.0.0.4\"} )"
+            }
+        },
+        "poolPassword": {
+            "maxLength": 36,
+            "type": "String",
+            "metadata": {
+                "description": "Password for the htcondor pool"
+            }
         }
     },
     "variables": {
@@ -283,7 +304,7 @@
                     "properties": {
                         "autoUpgradeMinorVersion": true,
                         "protectedSettings": {
-                            "commandToExecute": "[concat('./install.sh \"', parameters('applicationSecret'), '\" \"', parameters('applicationId'), '\" \"', parameters('tenantId'), '\" \"', parameters('azureSovereignCloud'), '\" \"', variables('cycleDownloadURL'), '\" \"', parameters('cyclecloudVersion'),  '\" \"', parameters('username'), '\" \"', reference(variables('cycleIPName')).dnsSettings.fqdn, '\" \"', parameters('storageAccountLocation'), '\" \"', parameters('password'), '\" \"', parameters('SSH Public Key'), '\"')]"
+                            "commandToExecute": "[concat('./install.sh \"', parameters('applicationSecret'), '\" \"', parameters('applicationId'), '\" \"', parameters('tenantId'), '\" \"', parameters('azureSovereignCloud'), '\" \"', variables('cycleDownloadURL'), '\" \"', parameters('cyclecloudVersion'),  '\" \"', parameters('username'), '\" \"', reference(variables('cycleIPName')).dnsSettings.fqdn, '\" \"', parameters('storageAccountLocation'), '\" \"', parameters('password'), '\" \"', parameters('SSH Public Key'), '\" \"', parameters('clusterName'), '\" \"', parameters('flockFrom'), '\" \"', parameters('poolPassword'), '\" \"', variables('resourceLocation'),'\"')]"
                         },
                         "publisher": "Microsoft.Azure.Extensions",
                         "settings": {

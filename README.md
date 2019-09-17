@@ -32,6 +32,7 @@ Some of the parameters are defaulted in the script itself and can be changed via
 
     * region (default is "West Europe")
 	* resource_group_name (default is "htcondor-%Y%m%d%H%M")
+	* cluster_name (default is "htcondor-%Y%m%d%H%M")
 	* virtual_nerwork_name (default is "htcondor-vnet")
 	* virtual_nerwork_subnet_name (default is "default")
 	* virtual_network_subnet_address_prefix (default is "10.0.0.0/24")
@@ -61,6 +62,12 @@ Others have to be defined in a `azuredeploy.parameters.json` file with the conte
 			"value": ""
 		},
 		"password": {
+			"value": ""
+		},
+		"flockFrom": {
+			"value": "{\"1.1.1.1\",\"2.2.2.2\"}"
+		},
+		"poolPassword": {
 			"value": ""
 		}
   }
