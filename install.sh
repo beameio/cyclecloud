@@ -13,7 +13,7 @@ password=${10}
 sshKey=${11}
 
 echo "Installing CycleCloud"
-python cyclecloud_install.py --applicationSecret "$applicationSecret" --applicationId "$applicationId" --tenantId "$tenantId" --azureSovereignCloud "$azureSovereignCloud" --downloadURL "$cycleDownloadURL" --cyclecloudVersion "$cyclecloudVersion" --username "$username" --hostname "$cycleFqdn" --storageAccount "$storageAccountLocation"
+python cyclecloud_install.py --cyclecloudVersion "$cyclecloudVersion" --downloadURL "$cycleDownloadURL" --azureSovereignCloud "$azureSovereignCloud" --tenantId "$tenantId" --applicationId "$applicationId" --applicationSecret "$applicationSecret" --username "$username" --hostname "$cycleFqdn" --acceptTerms --password "${password}" --storageAccount "$storageAccountLocation"
 
 ##### -- misses initialization of the cluster with username, password, sshKey
 

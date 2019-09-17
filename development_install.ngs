@@ -7,11 +7,11 @@ F main(resource_group_name:Str=Time().Str("htcondor-%Y%m%d%H%M"),
        region:Str="West Europe") {
 
     echo("Deploying with:")
-    echo("   region=${region}");
-    echo("   resource_group_name=${resource_group_name}");
-    echo("   virtual_nerwork_name=${virtual_nerwork_name}");
-    echo("   virtual_nerwork_subnet_name=${virtual_nerwork_subnet_name}");
-    echo("   virtual_network_subnet_address_prefix=${virtual_network_subnet_address_prefix}");
+    echo("   region = ${region}");
+    echo("   resource_group_name = ${resource_group_name}");
+    echo("   virtual_nerwork_name = ${virtual_nerwork_name}");
+    echo("   virtual_nerwork_subnet_name = ${virtual_nerwork_subnet_name}");
+    echo("   virtual_network_subnet_address_prefix = ${virtual_network_subnet_address_prefix}");
 
     assert(Program('az'))
     accounts = ``az account list``
@@ -29,5 +29,7 @@ F main(resource_group_name:Str=Time().Str("htcondor-%Y%m%d%H%M"),
     status("Starting template deployment")
     deploy = ``az group deployment create --resource-group ${resource_group_name} --template-file azuredeploy.json --parameters @azuredeploy.parameters.json --parameters existingVnetName=${virtual_nerwork_name} vnetSubnetName=${virtual_nerwork_subnet_name}``
 
-    echo("All done!!");
+    connectTo = ``az network public-ip show -g ${resource_group_name} -n cycle-ip --query dnsSettings.fqdn``
+
+    echo("All done!!  Connect to ${connectTo}");
 }
