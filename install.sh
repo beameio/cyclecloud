@@ -27,6 +27,13 @@ echo "Importing htcondor template '$htcondorTemplateName'"
 /usr/local/bin/cyclecloud import_template -f /root/cyclecloud-htcondor/templates/htcondor.txt
 
 echo "Starting cluster '$clusterName' from template '$htcondorTemplateName'"
-/usr/local/bin/cyclecloud create_cluster $htcondorTemplateName $clusterName -p configuration_htcondor_flock_from=$flockFrom configuration_htcondor_pool_password=$poolPassword Password=$password Region=$region
+
+echo "{
+    \"configuration_htcondor_flock_from\": \"$flockFrom\",
+    \"configuration_htcondor_pool_password\": \"$poolPassword\",
+    \"Password\": \"$password\",
+    \"Region\": \"$Region\"
+}" >> params.json
+/usr/local/bin/cyclecloud create_cluster $htcondorTemplateName $clusterName -p params.json
 /usr/local/bin/cyclecloud start_cluster $clusterName
 /usr/local/bin/cyclecloud add_node $clusterName
