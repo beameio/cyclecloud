@@ -29,8 +29,8 @@ htcondorTemplateName=$(cat /root/cyclecloud-htcondor/project.ini | grep "name ="
 echo "Importing htcondor template '$htcondorTemplateName'"
 /usr/local/bin/cyclecloud import_template -f /root/cyclecloud-htcondor/templates/htcondor.txt
 
-echo "Starting cluster '$clusterName' from template '$htcondorTemplateName'"
 
+echo "Creating cluster '$clusterName' from template '$htcondorTemplateName'"
 echo "{
     \"configuration_htcondor_flock_from\": \"$flockFrom\",
     \"configuration_htcondor_pool_password\": \"$poolPassword\",
@@ -42,5 +42,9 @@ echo "{
     \"ExecuteMachineType\": \"$executeMachineType\"
 }" >> params.json
 /usr/local/bin/cyclecloud create_cluster $htcondorTemplateName $clusterName -p params.json
+
+sleep 60
+
+echo "Starting cluster '$clusterName'"
 /usr/local/bin/cyclecloud start_cluster $clusterName
-/usr/local/bin/cyclecloud retry $clusterName  # retry any failed task
+#/usr/local/bin/cyclecloud retry $clusterName  # retry any failed task
