@@ -41,6 +41,6 @@ echo "{
     \"MasterMachineType\": \"$masterMachineType\",
     \"ExecuteMachineType\": \"$executeMachineType\"
 }" >> params.json
-
 /usr/local/bin/cyclecloud create_cluster $htcondorTemplateName $clusterName -p params.json
 /usr/local/bin/cyclecloud start_cluster $clusterName
+/usr/local/bin/cyclecloud retry $clusterName  # retry any failed task
