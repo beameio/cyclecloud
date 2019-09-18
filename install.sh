@@ -14,10 +14,9 @@ sshKey=${11}
 clusterName=${12}
 flockFrom=${13}
 poolPassword=${14}
-region=${15}
-subnetId=${16}
-masterMachineType=${17}
-executeMachineType=${18}
+subnetId=${15}
+masterMachineType=${16}
+executeMachineType=${17}
 
 echo "Installing CycleCloud"
 python cyclecloud_install.py --cyclecloudVersion "$cyclecloudVersion" --downloadURL "$cycleDownloadURL" --azureSovereignCloud "$azureSovereignCloud" --tenantId "$tenantId" --applicationId "$applicationId" --applicationSecret "$applicationSecret" --username "$username" --hostname "$cycleFqdn" --acceptTerms --password "${password}" --storageAccount "$storageAccountLocation"
@@ -35,7 +34,6 @@ echo "{
     \"configuration_htcondor_flock_from\": \"$flockFrom\",
     \"configuration_htcondor_pool_password\": \"$poolPassword\",
     \"Password\": \"$password\",
-    \"Region\": \"$region\",
     \"SubnetId\": \"$subnetId\",
     \"Credentials\": \"azure\",
     \"MasterMachineType\": \"$masterMachineType\",
@@ -43,8 +41,8 @@ echo "{
 }" >> params.json
 /usr/local/bin/cyclecloud create_cluster $htcondorTemplateName $clusterName -p params.json
 
+# wait for the machine type db to be filled
 sleep 60
 
 echo "Starting cluster '$clusterName'"
 /usr/local/bin/cyclecloud start_cluster $clusterName
-#/usr/local/bin/cyclecloud retry $clusterName  # retry any failed task

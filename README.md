@@ -9,7 +9,7 @@ Currently the main differences are:
 - allows to use an already existing vnet
 - installs https://github.com/beameio/cyclecloud-htcondor project in the cyclecloud machine
 
-## Structure and Flow
+## Structure
 * `development_install.ngs`  -> automated script, will create the azure required resources and call the azure deploy using the `azuredeploy.json` (see `Automated deploy` section)
 * `azuredeploy.json` -> cyclecloud azure deploy definition file. Defines the cyclecloud infrastructure setup and contains reference to run the `install.sh` in the cyclecloud vm (with the parameters) once available.
 * `install.sh` -> script that runs on the cyclecloud machine, calls the `cyclecloud_install.py` and imports the htcondor template into the machine
@@ -17,6 +17,7 @@ Currently the main differences are:
 ## Flow
 `development_install.ngs` -> `azuredeploy.json` -> `install.sh` -> `cyclecloud_install.py`
 																-> https://github.com/beameio/cyclecloud-htcondor fetch & import
+																-> start cluster
 ## Manual deploy
 
 <p><a target="_blank" title="Deploy to Azure" href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fbeameio%2Fcyclecloud%2Fmaster%2Fazuredeploy.json" data-linktype="external">
