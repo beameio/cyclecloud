@@ -18,22 +18,24 @@ region=${15}
 subnetId=${16}
 masterMachineType=${17}
 executeMachineType=${18}
+htCondorInstallFolder="/root/cyclecloud-htcondor"
 
 echo "Installing CycleCloud"
 python cyclecloud_install.py --cyclecloudVersion "$cyclecloudVersion" --downloadURL "$cycleDownloadURL" --azureSovereignCloud "$azureSovereignCloud" --tenantId "$tenantId" --applicationId "$applicationId" --applicationSecret "$applicationSecret" --username "$username" --hostname "$cycleFqdn" --acceptTerms --password "${password}" --storageAccount "$storageAccountLocation"
 
 echo "Fetching htcondor template"
-/usr/local/bin/cyclecloud project fetch https://github.com/beameio/cyclecloud-htcondor /root/cyclecloud-htcondor 
+/usr/local/bin/cyclecloud project fetch https://github.com/beameio/cyclecloud-htcondor $htCondorInstallFolder
 
-htcondorTemplateName=$(cat /root/cyclecloud-htcondor/project.ini | grep "name =" | cut -d "=" -f 2 | xargs) 
+htcondorTemplateName=$(cat $htCondorInstallFolder/project.ini | grep "name =" | cut -d "=" -f 2 | xargs) 
 echo "Importing htcondor template '$htcondorTemplateName'"
-/usr/local/bin/cyclecloud import_template -f /root/cyclecloud-htcondor/templates/htcondor.txt
+/usr/local/bin/cyclecloud import_template -f "$htCondorInstallFolder/templates/htcondor.txt"
 
 
 echo "Creating cluster '$clusterName' from template '$htcondorTemplateName'"
 echo "{
     \"configuration_htcondor_flock_from\": \"$flockFrom\",
     \"configuration_htcondor_pool_password\": \"$poolPassword\",
+    \"Username\": \"$username\",
     \"Password\": \"$password\",
     \"Region\": \"$region\",
     \"SubnetId\": \"$subnetId\",
