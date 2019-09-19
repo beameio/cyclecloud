@@ -24,6 +24,9 @@ htCondorInstallFolder="/root/cyclecloud-htcondor"
 echo "Installing CycleCloud"
 python cyclecloud_install.py --cyclecloudVersion "$cyclecloudVersion" --downloadURL "$cycleDownloadURL" --azureSovereignCloud "$azureSovereignCloud" --tenantId "$tenantId" --applicationId "$applicationId" --applicationSecret "$applicationSecret" --username "$username" --hostname "$cycleFqdn" --acceptTerms --password "${password}" --storageAccount "$storageAccountLocation"
 
+# wait for the machine type db to be filled
+sleep 120
+
 echo "Fetching htcondor template"
 /usr/local/bin/cyclecloud project fetch https://github.com/beameio/cyclecloud-htcondor $htCondorInstallFolder
 
@@ -46,7 +49,5 @@ echo "{
 }" >> params.json
 /usr/local/bin/cyclecloud create_cluster $htcondorTemplateName $clusterName -p params.json
 
-# wait for the machine type db to be filled
-sleep 60
 echo "Starting cluster '$clusterName'"
 /usr/local/bin/cyclecloud start_cluster $clusterName
