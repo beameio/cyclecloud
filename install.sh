@@ -18,6 +18,7 @@ region=${15}
 subnetId=${16}
 masterMachineType=${17}
 executeMachineType=${18}
+
 htCondorInstallFolder="/root/cyclecloud-htcondor"
 
 echo "Installing CycleCloud"
@@ -35,7 +36,7 @@ echo "Creating cluster '$clusterName' from template '$htcondorTemplateName'"
 echo "{
     \"configuration_htcondor_flock_from\": \"$flockFrom\",
     \"configuration_htcondor_pool_password\": \"$poolPassword\",
-    \"Username\": \"$username\",
+    \"Owner\": \"$username\",
     \"Password\": \"$password\",
     \"Region\": \"$region\",
     \"SubnetId\": \"$subnetId\",
