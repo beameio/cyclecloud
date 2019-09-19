@@ -23,12 +23,6 @@
                 "description": "The Application Secret of the Service Principal [> password <]"
             }
         },
-        "SSH Public Key": {
-            "type": "String",
-            "metadata": {
-                "description": "The SSH public key to access the VMs."
-            }
-        },
         "username": {
             "maxLength": 32,
             "type": "String",
@@ -40,7 +34,13 @@
             "maxLength": 32,
             "type": "SecureString",
             "metadata": {
-                "description": "The password for logging into the cyclecloud"
+                "description": "The password for logging into the cyclecloud and htcondor machines. Please make sure the windows machines password complexity is respected."
+            }
+        },
+        "SSH Public Key": {
+            "type": "String",
+            "metadata": {
+                "description": "The SSH public key to access the VMs."
             }
         },
         "cyclecloudVmSize": {
@@ -128,12 +128,12 @@
             "maxLength": 36,
             "type": "String",
             "metadata": {
-                "description": "Allowed flock from htcondor ips, in the format {\"10.0.0.1\",\"10.0.0.4\"} )"
+                "description": "Allowed flock from htcondor ip"
             }
         },
         "poolPassword": {
             "maxLength": 36,
-            "type": "String",
+            "type": "SecureString",
             "metadata": {
                 "description": "Password for the htcondor pool"
             }
