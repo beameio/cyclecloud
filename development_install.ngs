@@ -19,16 +19,16 @@ F main(resource_group_name:Str=Time().Str("htcondor-%Y%m%d%H%M"),
     if not(accounts) ``az login``     # login if not done already
 
     status("Creating resouce group")
-    $(az group create --name ${resource_group_name} --location ${region} >${false})
+    $(log: az group create --name ${resource_group_name} --location ${region} >${false})
 
     status("Creating virtual network")
-    $(az network vnet create  --name ${virtual_nerwork_name} --resource-group ${resource_group_name} >${false}) 
+    $(log: az network vnet create  --name ${virtual_nerwork_name} --resource-group ${resource_group_name} >${false}) 
 
     status("Creating subnet")
-    $(az network vnet subnet create --resource-group ${resource_group_name} --vnet-name ${virtual_nerwork_name} --name ${virtual_nerwork_subnet_name} --address-prefixes ${virtual_network_subnet_address_prefix} >${false})
+    $(log: az network vnet subnet create --resource-group ${resource_group_name} --vnet-name ${virtual_nerwork_name} --name ${virtual_nerwork_subnet_name} --address-prefixes ${virtual_network_subnet_address_prefix} >${false})
 
     status("Deploying template (azuredeploy.json)")
-    $(az group deployment create --resource-group ${resource_group_name} --template-file azuredeploy.json --parameters @azuredeploy.parameters.json --parameters existingVnetName=${virtual_nerwork_name} vnetSubnetName=${virtual_nerwork_subnet_name} clusterName=${cluster_name} >${false})
+    $(log: az group deployment create --resource-group ${resource_group_name} --template-file azuredeploy.json --parameters @azuredeploy.parameters.json --parameters existingVnetName=${virtual_nerwork_name} vnetSubnetName=${virtual_nerwork_subnet_name} clusterName=${cluster_name} >${false})
 
     connectTo = ``az network public-ip show -g ${resource_group_name} -n cycle-ip --query dnsSettings.fqdn``
     echo("")
