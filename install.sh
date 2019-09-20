@@ -19,7 +19,7 @@ subnetId=${16}
 masterMachineType=${17}
 executeMachineType=${18}
 
-htCondorInstallFolder="/opt/cycle_server/system/staging/projects/cyclecloud-htcondor"
+htCondorInstallFolder="/opt/cycle_server/work/staging/projects/cyclecloud-htcondor"
 
 echo "Installing CycleCloud"
 python cyclecloud_install.py --cyclecloudVersion "$cyclecloudVersion" --downloadURL "$cycleDownloadURL" --azureSovereignCloud "$azureSovereignCloud" --tenantId "$tenantId" --applicationId "$applicationId" --applicationSecret "$applicationSecret" --username "$username" --hostname "$cycleFqdn" --acceptTerms --password "${password}" --storageAccount "$storageAccountLocation"
