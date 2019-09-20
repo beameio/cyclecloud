@@ -21,7 +21,7 @@ executeMachineType=${18}
 
 cyclecloudExec="/usr/local/bin/cyclecloud"
 htCondorDownloadFolder="/root/htcondor-flocking"
-cycleProjectsFolder="/opt/cycle_server/work/staging/projects/"
+cycleProjectsFolder="/opt/cycle_server/work/staging/projects/htcondor-flocking"
 blobsDownloadLink="https://github.com/Azure/cyclecloud-htcondor/releases/download/1.0.1"
 htcondorFetchLocation="https://github.com/beameio/cyclecloud-htcondor"
 
@@ -33,18 +33,23 @@ sleep 60
 
 echo "Fetching htcondor template"
 $cyclecloudExec project fetch $htcondorFetchLocation $htCondorDownloadFolder
+htcondorTemplateName=$(cat $htCondorDownloadFolder/project.ini | grep "name =" | cut -d "=" -f 2 | xargs) 
+htcondorTemplateVersion=$(cat $htCondorDownloadFolder/project.ini | grep "version =" | cut -d "=" -f 2 | xargs)
+htcondorFiles=$(cat $htCondorDownloadFolder/project.ini | grep "Files=" | cut -d "=" -f 2 | xargs)
 
 echo "Downloading blobs"
 mkdir -p $htCondorDownloadFolder/blobs
-(cd $htCondorDownloadFolder/blobs && \
- wget $blobsDownloadLink/condor-8.6.13-Windows-x64.msi $blobsDownloadLink/condor-8.6.13-x86_64_RedHat6-stripped.tar.gz \
-  $blobsDownloadLink/condor-8.6.13-x86_64_RedHat7-stripped.tar.gz $blobsDownloadLink/condor-8.6.13-x86_64_Ubuntu14-stripped.tar.gz \
-  $blobsDownloadLink/condor-8.6.13-x86_64_Ubuntu16-stripped.tar.gz $blobsDownloadLink/condor-8.6.13-x86_64_Ubuntu18-stripped.tar.gz \
-  $blobsDownloadLink/condor-agent-1.27.tgz $blobsDownloadLink/condor-agent-1.27.zip )
+files=($(echo $htcondorFiles | tr "," "\n"))
+for i in "${files[@]}"
+do
+    (cd $htCondorDownloadFolder/blobs && wget $blobsDownloadLink/$i)
+done
 (cd $htCondorDownloadFolder && $cyclecloudExec project build && $cyclecloudExec project upload azure-storage)
-cp -rv $htCondorDownloadFolder/build/* $cycleProjectsFolder
+mkdir -p $cycleProjectsFolder
+mkdir -p $cycleProjectsFolder/$htcondorTemplateVersion
+cp -rv $htCondorDownloadFolder/build/$htcondorTemplateName/* $cycleProjectsFolder/$htcondorTemplateVersion
+cp -rv $htCondorDownloadFolder/blobs $cycleProjectsFolder
 
-htcondorTemplateName=$(cat $htCondorDownloadFolder/project.ini | grep "name =" | cut -d "=" -f 2 | xargs) 
 echo "Importing htcondor template '$htcondorTemplateName'"
 $cyclecloudExec import_template -f "$htCondorDownloadFolder/templates/htcondor.txt"
 
