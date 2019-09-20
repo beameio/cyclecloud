@@ -19,7 +19,11 @@ subnetId=${16}
 masterMachineType=${17}
 executeMachineType=${18}
 
-htCondorInstallFolder="/opt/cycle_server/work/staging/projects/cyclecloud-htcondor"
+cyclecloudExec="/usr/local/bin/cyclecloud"
+htCondorDownloadFolder="/root/htcondor-flocking"
+cycleProjectsFolder="/opt/cycle_server/work/staging/projects/"
+blobsDownloadLink="https://github.com/Azure/cyclecloud-htcondor/releases/download/1.0.1"
+htcondorFetchLocation="https://github.com/beameio/cyclecloud-htcondor"
 
 echo "Installing CycleCloud"
 python cyclecloud_install.py --cyclecloudVersion "$cyclecloudVersion" --downloadURL "$cycleDownloadURL" --azureSovereignCloud "$azureSovereignCloud" --tenantId "$tenantId" --applicationId "$applicationId" --applicationSecret "$applicationSecret" --username "$username" --hostname "$cycleFqdn" --acceptTerms --password "${password}" --storageAccount "$storageAccountLocation"
@@ -28,12 +32,21 @@ python cyclecloud_install.py --cyclecloudVersion "$cyclecloudVersion" --download
 sleep 60
 
 echo "Fetching htcondor template"
-/usr/local/bin/cyclecloud project fetch https://github.com/beameio/cyclecloud-htcondor $htCondorInstallFolder
+$cyclecloudExec project fetch $htcondorFetchLocation $htCondorDownloadFolder
 
-htcondorTemplateName=$(cat $htCondorInstallFolder/project.ini | grep "name =" | cut -d "=" -f 2 | xargs) 
+echo "Downloading blobs"
+mkdir -p $htCondorDownloadFolder/blobs
+(cd $htCondorDownloadFolder/blobs && \
+ wget $blobsDownloadLink/condor-8.6.13-Windows-x64.msi $blobsDownloadLink/condor-8.6.13-x86_64_RedHat6-stripped.tar.gz \
+  $blobsDownloadLink/condor-8.6.13-x86_64_RedHat7-stripped.tar.gz $blobsDownloadLink/condor-8.6.13-x86_64_Ubuntu14-stripped.tar.gz \
+  $blobsDownloadLink/condor-8.6.13-x86_64_Ubuntu16-stripped.tar.gz $blobsDownloadLink/condor-8.6.13-x86_64_Ubuntu18-stripped.tar.gz \
+  $blobsDownloadLink/condor-agent-1.27.tgz $blobsDownloadLink/condor-agent-1.27.zip )
+(cd $htCondorDownloadFolder && $cyclecloudExec project build && $cyclecloudExec project upload azure-storage)
+cp -rv $htCondorDownloadFolder/build/* $cycleProjectsFolder
+
+htcondorTemplateName=$(cat $htCondorDownloadFolder/project.ini | grep "name =" | cut -d "=" -f 2 | xargs) 
 echo "Importing htcondor template '$htcondorTemplateName'"
-/usr/local/bin/cyclecloud import_template -f "$htCondorInstallFolder/templates/htcondor.txt"
-
+$cyclecloudExec import_template -f "$htCondorDownloadFolder/templates/htcondor.txt"
 
 echo "Creating cluster '$clusterName' from template '$htcondorTemplateName'"
 echo "{
@@ -47,7 +60,7 @@ echo "{
     \"MasterMachineType\": \"$masterMachineType\",
     \"ExecuteMachineType\": \"$executeMachineType\"
 }" >> params.json
-/usr/local/bin/cyclecloud create_cluster $htcondorTemplateName $clusterName -p params.json
+$cyclecloudExec create_cluster $htcondorTemplateName $clusterName -p params.json
 
 echo "Starting cluster '$clusterName'"
-/usr/local/bin/cyclecloud start_cluster $clusterName
+$cyclecloudExec start_cluster $clusterName
